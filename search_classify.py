@@ -1,3 +1,4 @@
+import pickle
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +8,7 @@ import time
 from sklearn.svm import LinearSVC
 from sklearn.preprocessing import StandardScaler
 from skimage.feature import hog
-from lesson_functions import *
+from lesson_function import *
 # NOTE: the next import is only valid for scikit-learn version <= 0.17
 # for scikit-learn >= 0.18 use:
 # from sklearn.model_selection import train_test_split
@@ -16,6 +17,8 @@ from sklearn.cross_validation import train_test_split
 # Define a function to extract features from a single image window
 # This function is very similar to extract_features()
 # just for a single image rather than list of images
+
+
 def single_img_features(img, color_space='RGB', spatial_size=(32, 32),
                         hist_bins=32, orient=9, 
                         pix_per_cell=8, cell_per_block=2, hog_channel=0,
@@ -34,7 +37,7 @@ def single_img_features(img, color_space='RGB', spatial_size=(32, 32),
             feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
         elif color_space == 'YCrCb':
             feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
-    else: feature_image = np.copy(img)      
+    else: feature_image = np.copy(img)
     #3) Compute spatial features if flag is set
     if spatial_feat == True:
         spatial_features = bin_spatial(feature_image, size=spatial_size)
@@ -112,18 +115,28 @@ sample_size = 500
 cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
 
+
+dist_pickle = {}
+
 ### TODO: Tweak these parameters and see how the results change.
 color_space = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8 # HOG pixels per cell
 cell_per_block = 2 # HOG cells per block
 hog_channel = 0 # Can be 0, 1, 2, or "ALL"
-spatial_size = (16, 16) # Spatial binning dimensions
-hist_bins = 16    # Number of histogram bins
+spatial_size = (32, 32) # Spatial binning dimensions
+hist_bins = 32   # Number of histogram bins
 spatial_feat = True # Spatial features on or off
 hist_feat = True # Histogram features on or off
 hog_feat = True # HOG features on or off
 y_start_stop = [None, None] # Min and max in y to search in slide_window()
+
+
+dist_pickle["orient"] = orient
+dist_pickle["pix_per_cell"] = pix_per_cell
+dist_pickle["cell_per_block"] = cell_per_block
+dist_pickle["spatial_size"] = spatial_size
+dist_pickle["hist_bins"] = hist_bins
 
 car_features = extract_features(cars, color_space=color_space, 
                         spatial_size=spatial_size, hist_bins=hist_bins, 
@@ -144,6 +157,8 @@ X_scaler = StandardScaler().fit(X)
 # Apply the scaler to X
 scaled_X = X_scaler.transform(X)
 
+dist_pickle["scaler"] = X_scaler
+
 # Define the labels vector
 y = np.hstack((np.ones(len(car_features)), np.zeros(len(notcar_features))))
 
@@ -161,6 +176,7 @@ svc = LinearSVC()
 # Check the training time for the SVC
 t=time.time()
 svc.fit(X_train, y_train)
+dist_pickle["svc"] = svc
 t2 = time.time()
 print(round(t2-t, 2), 'Seconds to train SVC...')
 # Check the score of the SVC
@@ -168,7 +184,7 @@ print('Test Accuracy of SVC = ', round(svc.score(X_test, y_test), 4))
 # Check the prediction time for a single sample
 t=time.time()
 
-image = mpimg.imread('test_images/test6.jpg')
+image = mpimg.imread('test_images/bbox-example-image.jpg')
 draw_image = np.copy(image)
 
 # Uncomment the following line if you extracted training
@@ -186,7 +202,12 @@ hot_windows = search_windows(image, windows, svc, X_scaler, color_space=color_sp
                         hog_channel=hog_channel, spatial_feat=spatial_feat, 
                         hist_feat=hist_feat, hog_feat=hog_feat)                       
 
-window_img = draw_boxes(draw_image, hot_windows, color=(0, 0, 255), thick=6)                    
+window_img = draw_boxes(draw_image, hot_windows, color=(0, 0, 255), thick=6)
+
+
+
+
+pickle.dump( dist_pickle, open( "svc_pickle.p", "wb" ) )
 
 plt.imshow(window_img)
 plt.show()
