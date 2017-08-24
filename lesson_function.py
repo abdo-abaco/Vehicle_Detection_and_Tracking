@@ -41,12 +41,82 @@ def color_hist(img, nbins=32, bins_range=(0, 256)):
     # Return the individual histograms, bin_centers and feature vector
     return hist_features
 
+
+
+def single_img_features(img, cspace='RGB', spatial_size=(32, 32),
+                        hist_bins=32, orient=9, pix_per_cell=8,
+                        cell_per_block=2, hog_channel=0, spatial_feat=True,
+                        hist_feat=True, hog_feat=True, vis=False):
+    """
+    A function to extract features from a single image window
+    This function is called by extract_features() to iterate
+    over a list of file paths to images.
+    """
+    # 1) Define an empty list to receive features
+    img_features = []
+    # 2) Apply color conversion if other than 'RGB'
+    if cspace != 'RGB':
+        feature_image = cv2.cvtColor(img, getattr(cv2, "COLOR_RGB2" + cspace))
+    else:
+        feature_image = np.copy(image)
+    # 3) Compute spatial features if flag is set
+    if spatial_feat:
+        spatial_features = bin_spatial(feature_image, size=spatial_size)
+        # 4) Append features to list
+        img_features.append(spatial_features)
+    # 5) Compute histogram features if flag is set
+    if hist_feat:
+        hist_features = color_hist(feature_image, nbins=hist_bins)
+        # 6) Append features to list
+        img_features.append(hist_features)
+    # 7) Compute HOG features if flag is set
+    if hog_feat:
+        if hog_channel == 'ALL':
+            hog_features = []
+            for channel in range(feature_image.shape[2]):
+                output = get_hog_features(feature_image[:, :, channel],
+                                          orient, pix_per_cell, cell_per_block,
+                                          vis=vis, feature_vec=True)
+                if isinstance(output, tuple):
+                    hog_features.extend(output[0])
+                    hog_image = output[1]
+                else:
+                    hog_features.extend(output)
+                    hog_image = None
+        else:
+            output = get_hog_features(feature_image[:, :, hog_channel], orient,
+                                      pix_per_cell, cell_per_block, vis=vis, feature_vec=True)
+            hog_features = []
+            if type(output) == tuple:
+                hog_features.extend(output[0])
+                hog_image = output[1]
+            else:
+                hog_features.extend(output)
+                hog_image = None
+        # 8) Append features to list
+        img_features.append(hog_features)
+
+    # 9) Return concatenated array of features
+    # Don't include visualization if there is none.
+    if hog_image is None:
+        return np.concatenate(img_features)
+    else:
+        return np.concatenate(img_features), hog_image
+
+
 # Define a function to extract features from a list of images
 # Have this function call bin_spatial() and color_hist()
 def extract_features(imgs, color_space='RGB', spatial_size=(32, 32),
-                        hist_bins=32, orient=9, 
-                        pix_per_cell=8, cell_per_block=2, hog_channel=0,
-                        spatial_feat=True, hist_feat=True, hog_feat=True):
+                     hist_bins=32, orient=9,
+                     pix_per_cell=8, cell_per_block=2, hog_channel=0,
+                     spatial_feat=True, hist_feat=True, hog_feat=True,
+                     vis=False):
+    """
+    Extract features from a list of images.
+    Executes single_img_features over a list of image paths.
+    Returns a list of outputs.
+    """
+
     # Create a list to append feature vectors to
     features = []
     # Iterate through the list of images
@@ -54,42 +124,18 @@ def extract_features(imgs, color_space='RGB', spatial_size=(32, 32),
         file_features = []
         # Read in each one by one
         image = mpimg.imread(file)
-        # apply color conversion if other than 'RGB'
-        if color_space != 'RGB':
-            if color_space == 'HSV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-            elif color_space == 'LUV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2LUV)
-            elif color_space == 'HLS':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
-            elif color_space == 'YUV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
-            elif color_space == 'YCrCb':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
-        else: feature_image = np.copy(image)      
+        file_features = single_img_features(image, color_space, spatial_size,
+                                            hist_bins, orient, pix_per_cell,
+                                            cell_per_block, hog_channel,
+                                            spatial_feat, hist_feat, hog_feat,
+                                            vis)
 
-        if spatial_feat == True:
-            spatial_features = bin_spatial(feature_image, size=spatial_size)
-            file_features.append(spatial_features)
-        if hist_feat == True:
-            # Apply color_hist()
-            hist_features = color_hist(feature_image, nbins=hist_bins)
-            file_features.append(hist_features)
-        if hog_feat == True:
-        # Call get_hog_features() with vis=False, feature_vec=True
-            if hog_channel == 'ALL':
-                hog_features = []
-                for channel in range(feature_image.shape[2]):
-                    hog_features.append(get_hog_features(feature_image[:,:,channel], 
-                                        orient, pix_per_cell, cell_per_block, 
-                                        vis=False, feature_vec=True))
-                hog_features = np.ravel(hog_features)        
-            else:
-                hog_features = get_hog_features(feature_image[:,:,hog_channel], orient, 
-                            pix_per_cell, cell_per_block, vis=False, feature_vec=True)
-            # Append the new feature vector to the features list
-            file_features.append(hog_features)
-        features.append(np.concatenate(file_features))
+        # Don't include visualization if there is none.
+        if not file_features[1]:
+            file_features = file_features[0]
+
+        features.append(file_features)
+
     # Return list of feature vectors
     return features
     

@@ -2,6 +2,7 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+import glob
 import cv2
 from lesson_functions import *
 from scipy.ndimage.measurements import label
@@ -15,19 +16,51 @@ cell_per_block = dist_pickle["cell_per_block"]
 spatial_size = dist_pickle["spatial_size"]
 hist_bins = dist_pickle["hist_bins"]
 
-img = mpimg.imread('test_images/test1.jpg')
+
+def add_heat(heatmap, bbox_list):
+    # Iterate through list of bboxes
+    for box in bbox_list:
+        # Add += 1 for all pixels inside each bbox
+        # Assuming each "box" takes the form ((x1, y1), (x2, y2))
+        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+
+    # Return updated heatmap
+    return heatmap# Iterate through list of bboxes
+
+def apply_threshold(heatmap, threshold):
+    # Zero out pixels below the threshold
+    heatmap[heatmap <= threshold] = 0
+    # Return thresholded map
+    return heatmap
+
+def draw_labeled_bboxes(img, labels):
+    # Iterate through all detected cars
+    for car_number in range(1, labels[1]+1):
+        # Find pixels with each car_number label value
+        nonzero = (labels[0] == car_number).nonzero()
+        # Identify x and y values of those pixels
+        nonzeroy = np.array(nonzero[0])
+        nonzerox = np.array(nonzero[1])
+        # Define a bounding box based on min/max x and y
+        bbox = ((np.min(nonzerox), np.min(nonzeroy)), (np.max(nonzerox), np.max(nonzeroy)))
+        # Draw the box on the image
+        cv2.rectangle(img, bbox[0], bbox[1], (0,0,255), 6)
+    # Return the image
+    return img
+
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
-def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
+def find_cars(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
     
     bbox_list = []
     draw_img = np.copy(img)
     img = img.astype(np.float32)/255
     
     img_tosearch = img[ystart:ystop,:,:]
-    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
+
 
     for scale in scales:
+    	ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
     	if scale != 1:
         	imshape = ctrans_tosearch.shape
         	ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1]/scale), np.int(imshape[0]/scale)))
@@ -35,7 +68,6 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     	ch1 = ctrans_tosearch[:,:,0]
     	ch2 = ctrans_tosearch[:,:,1]
     	ch3 = ctrans_tosearch[:,:,2]
-
     	# Define blocks and steps as above
     	nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1
     	nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1 
@@ -44,7 +76,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     	# 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
     	window = 64
     	nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
-    	cells_per_step = 2  # Instead of overlap, define how many cells to step
+    	cells_per_step = 1  # Instead of overlap, define how many cells to step
+
     	nxsteps = (nxblocks - nblocks_per_window) // cells_per_step
     	nysteps = (nyblocks - nblocks_per_window) // cells_per_step
     
@@ -52,7 +85,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     	hog1 = get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
     	hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
     	hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
-    
+
     	for xb in range(nxsteps):
             for yb in range(nysteps):
             	ypos = yb*cells_per_step
@@ -90,78 +123,70 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 			#a[1][0] = ytop_draw
 			#a[1][1] = ytop_draw+wind_draw
                 	bbox_list.append(a)
+
+
                 
     #pickle.dump( bbox_list, open( "bbox_pickle.p", "wb" ) )
-    return bbox_list
+    return bbox_list, draw_img
     
 
-
+imagefile = './test_images/mod_1/*'
+images = glob.glob(imagefile)
 
 ystart = 400
 ystop = 656
-scales = {1.5}
-#scale = 1.5
+scales = [0.9,1.5]
+img = mpimg.imread('test_images/test_images/test2.jpg')
+prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
+prev_prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
+number = 0
 
-    
-box_list = find_cars(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
+# Iterate over test images
+for img_path in images:
+    img_path = './test_images/mod_1/frame' + str(number) + '.jpg'
+    number += 1
+    print(img_path)
+    img = mpimg.imread(img_path)
+    box_list, draw_bs = find_cars(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
 
+    heat = np.zeros_like(img[:,:,0]).astype(np.float)
+    # Add heat to each box in box list
+    current_heat = add_heat(heat,box_list)
+    heat = current_heat + prev_heat
+    mx = np.max(heat)
+    mn = np.sum(heat)/np.count_nonzero(heat)
+    th = 28
+    print('max: ', mx)
+    print('mean: ', mn)
+    print('threshold: ', th)
+    print('sum: ', mn)
 
+    # Apply threshold to help remove false positives
+    heat = apply_threshold(heat,th)
 
-heat = np.zeros_like(img[:,:,0]).astype(np.float)
+    # Visualize the heatmap when displaying    
+    heatmap = np.clip(heat, 0, 255)
 
-def add_heat(heatmap, bbox_list):
-    # Iterate through list of bboxes
-    for box in bbox_list:
-        # Add += 1 for all pixels inside each bbox
-        # Assuming each "box" takes the form ((x1, y1), (x2, y2))
-        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+    # Find final boxes from heatmap using label function
+    labels = label(heatmap)
+    draw_img = draw_labeled_bboxes(np.copy(img), labels)
+    cvt_img = cv2.cvtColor(draw_img, cv2.COLOR_BGR2RGB)
+    str2 = 'output_images' + img_path
+    print(str2)
+    cv2.imwrite(str2,cvt_img)
+    prev_heat = current_heat
+    #fig = plt.figure()
+    #plt.subplot(311)
+    #plt.imshow(draw_bs)
+    #plt.subplot(312)
+    #plt.imshow(draw_img)
+    #plt.title('Car Positions')
+    #plt.subplot(313)
+    #plt.imshow(heatmap, cmap='hot')
+    #plt.title('Heat Map')
+    #fig.tight_layout()
+    #plt.show()
 
-    # Return updated heatmap
-    return heatmap# Iterate through list of bboxes
-    
-def apply_threshold(heatmap, threshold):
-    # Zero out pixels below the threshold
-    heatmap[heatmap <= threshold] = 0
-    # Return thresholded map
-    return heatmap
-
-def draw_labeled_bboxes(img, labels):
-    # Iterate through all detected cars
-    for car_number in range(1, labels[1]+1):
-        # Find pixels with each car_number label value
-        nonzero = (labels[0] == car_number).nonzero()
-        # Identify x and y values of those pixels
-        nonzeroy = np.array(nonzero[0])
-        nonzerox = np.array(nonzero[1])
-        # Define a bounding box based on min/max x and y
-        bbox = ((np.min(nonzerox), np.min(nonzeroy)), (np.max(nonzerox), np.max(nonzeroy)))
-        # Draw the box on the image
-        cv2.rectangle(img, bbox[0], bbox[1], (0,0,255), 6)
-    # Return the image
-    return img
-
-# Add heat to each box in box list
-heat = add_heat(heat,box_list)
-    
-# Apply threshold to help remove false positives
-heat = apply_threshold(heat,1)
-
-# Visualize the heatmap when displaying    
-heatmap = np.clip(heat, 0, 255)
-
-# Find final boxes from heatmap using label function
-labels = label(heatmap)
-draw_img = draw_labeled_bboxes(np.copy(img), labels)
-
-fig = plt.figure()
-plt.subplot(121)
-plt.imshow(draw_img)
-plt.title('Car Positions')
-plt.subplot(122)
-plt.imshow(heatmap, cmap='hot')
-plt.title('Heat Map')
-fig.tight_layout()
-plt.show()
 
 
 
