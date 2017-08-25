@@ -49,29 +49,26 @@ On `search_classify.py` lines 91 I define the labels vector and on line 95 I spl
 
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Input Layer         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 28x28x6 	|
-| RELU					|												|
-| Average pooling	      	| 2x2 stride,  outputs 14x14x6 				|
-| Convolution 3x3	    |    outputs 10x10x16 				   									|
-| RELU					|												|
-| Average pooling	      	| 2x2 stride,  outputs 5x5x16 				|
-| Flatten		|       Input = 5x5x16. Output = 400  									|
-| Fully Connected				|        Input = 400. Output = 200									|
-| RELU					|												|
-| DROPOUT					|												|
-| Fully Connected				|        Input = 200. Output = 120									|
-| RELU					|												|
-| DROPOUT					|												|
-| Fully Connected				|        Input = 120. Output = 43									|
+| Feature vector length         		| 8460  							| 
+| Seconds to train SVC     	| 16.58 |
+| Test Accuracy of SVC					|	0.9893 |
+| My SVC predicts	      	| 				|
+| 0    |    0				   									|
+| 0    |    0				   									|
+| 1    |    1				   									|
+| 1    |    1				   									|
+| 0    |    0				   									|
+| 0    |    0				   									|
+| 0    |    0				   									|
+| 0    |    0				   									|
+| 1    |    1				   									|
+| 1    |    1				   									|
+| Seconds to predict 10 labels with SVC   |    0.00083 				   									|
+
 
 Using: 9 orientations 8 pixels per cell and 2 cells per block
-Feature vector length: 8460
-16.58 Seconds to train SVC...
-Test Accuracy of SVC =  0.9893
-My SVC predicts:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
-For these 10 labels:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
-0.00083 Seconds to predict 10 labels with SVC
+
+
 
 
 
