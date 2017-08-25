@@ -18,7 +18,7 @@ In this project our goal is to create a software pipeline to detect vehicles in 
 [image6]: ./output_images/figure_6.png
 [image7]: ./output_images/figure_7.jpg
 [image8]: ./output_images/figure_8.jpg
-[video1]: ./project_video.mp4
+[video1]: ./output_project_video.mp4
 
 Bringing in the Training Data
 ---
@@ -37,14 +37,11 @@ Here is an example of my selected HOG parameters.
 
 Normalizing the Extracted HOG Features
 ---
-
 Before feeding the extracted HOG features we normalize them using sklearn.preprocessing's StandardScaler() as seen on `search_classify.py` lines 83-88. Here is what the features looked like before and after normalization.
 ![alt text][image4]
 
-
 Training a Support Vector Classifier (SVC) using HOG Features
 ---
-
 On `search_classify.py` lines 91 I define the labels vector and on line 95 I split the data into training and testing data, I chose a 90/10 split because of the limited amount of data and figured 10% training would offer sufficient samples to determine the accuracy. On line 105 I trained the SVC using the HOG features.
 
 The Support Vector Classifier and the accompanying parameters get stored `svc_pickle.p` as shown on `search_classify.py` lines 119-127. This generating file is used in the rest of the project as I discuss `project.py`. I record the results of the experience on the table below:
@@ -71,9 +68,8 @@ The Support Vector Classifier and the accompanying parameters get stored `svc_pi
 | 1    |    1				   									|
 | Seconds to predict 10 labels with SVC   |    0.00083 				   									|
 
-Sliding Window Search
+Sliding Window Search and Detection
 ---
-
 Now that we have a classifier we are ready to use it to find vehicles in an image. Unfortunately, we cannot just feed the entire image to the classifer we must segment the entire image into overlapping boxes of different scales and slide these 'windows' across the entire image. This requires a great deal of processing.
 
 Initially the boxes are not overlapping and are scanned across the entire image as shown below:
@@ -83,47 +79,22 @@ To save some processing, I select to scan only the pixels in the vertical range 
 
 To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This captures most of the range, however, this does not perform well for extremely close or extremly far vehicles. 
 
-These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns a bounding box for their location. A heatmap is generated which increments a pixel location for every pixel in a bounding box. To improve reliability and prevent many false positives we add the heatmap from the previous frame and increase the threshold on lines 148 to 159. Both the heatmap and resulting detections are shown below.
+These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns bounding boxs for their location. A heatmap is generated which increments a pixel location for every pixel in a bounding box.
+
+With the scales set to 0.9 and 1.5, I chose to have cells_per_step = 1 which provides sufficient overlap and increases accuracy. To improve reliability and prevent many false positives we add the heatmap from the previous frame and increase the threshold on lines 148 to 159.
+
+To find the final boxes from the heatmap I use label function from scipy.ndimage.measurements as shown in line 168. Both the heatmap and resulting detections are shown below.
 
 ![alt text][image7]
 ![alt text][image8]
 
-
-
+Video Implementation 
 ---
+Here's a [link to my video result](./output_project_video.mp4)
 
-
-
-### Video Implementation
-
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
-
-
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
-
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
-
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-
-
-
-
+Discussion
 ---
-
-###Discussion
-
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Scaling proved to be a problem as adding more scales significantly reduced performance by requiring many processing. By limiting the scales to two values we ran the risk of not properly detecting vehicles in other scales. False positive detections forced us to increase our threshold which ran the risk of some true positives being thresholded. To make this more robust I suggest using more modern computer vision and machine learning techniques as these techniques can be outdated with the rapid changes in this field.
 
 
 
