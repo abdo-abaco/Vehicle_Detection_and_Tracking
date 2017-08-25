@@ -152,7 +152,7 @@ for img_path in images:
     prev_heat = current_heat
     mx = np.max(heat)
     mn = np.sum(heat)/np.count_nonzero(heat)
-    th = 5
+    th = 10
     print('max: ', mx)
     print('mean: ', mn)
     print('threshold: ', th)
