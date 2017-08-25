@@ -118,10 +118,6 @@ def find_cars(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, c
                 	win_draw = np.int(window*scale)
                 	cv2.rectangle(draw_img,(xbox_left, ytop_draw+ystart),(xbox_left+win_draw,ytop_draw+win_draw+ystart),(0,0,255),6)
                 	a = [[xbox_left, ytop_draw+400], [xbox_left+win_draw, ytop_draw+win_draw+400]]
-			#a[0][0] = xbox_left
-			#a[0][1] = xbox_left+win_draw
-			#a[1][0] = ytop_draw
-			#a[1][1] = ytop_draw+wind_draw
                 	bbox_list.append(a)
 
 
@@ -130,20 +126,20 @@ def find_cars(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, c
     return bbox_list, draw_img
     
 
-imagefile = './test_images/mod_1/*'
+imagefile = './test_images/*'
 images = glob.glob(imagefile)
 
 ystart = 400
 ystop = 656
 scales = [0.9,1.5]
-img = mpimg.imread('test_images/test_images/test2.jpg')
+img = mpimg.imread('test_images/test2.jpg')
 prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
 prev_prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
-number = 0
+number = 1
 
 # Iterate over test images
 for img_path in images:
-    img_path = './test_images/mod_1/frame' + str(number) + '.jpg'
+    img_path = './test_images/test' + str(number) + '.jpg'
     number += 1
     print(img_path)
     img = mpimg.imread(img_path)
@@ -155,14 +151,14 @@ for img_path in images:
     heat = current_heat + prev_heat
     mx = np.max(heat)
     mn = np.sum(heat)/np.count_nonzero(heat)
-    th = 28
+    th = 5
     print('max: ', mx)
     print('mean: ', mn)
     print('threshold: ', th)
     print('sum: ', mn)
 
     # Apply threshold to help remove false positives
-    heat = apply_threshold(heat,th)
+    heat = apply_threshold(heat,0)
 
     # Visualize the heatmap when displaying    
     heatmap = np.clip(heat, 0, 255)
@@ -170,22 +166,8 @@ for img_path in images:
     # Find final boxes from heatmap using label function
     labels = label(heatmap)
     draw_img = draw_labeled_bboxes(np.copy(img), labels)
-    cvt_img = cv2.cvtColor(draw_img, cv2.COLOR_BGR2RGB)
-    str2 = 'output_images' + img_path
-    print(str2)
-    cv2.imwrite(str2,cvt_img)
-    prev_heat = current_heat
-    #fig = plt.figure()
-    #plt.subplot(311)
-    #plt.imshow(draw_bs)
-    #plt.subplot(312)
-    #plt.imshow(draw_img)
-    #plt.title('Car Positions')
-    #plt.subplot(313)
-    #plt.imshow(heatmap, cmap='hot')
-    #plt.title('Heat Map')
-    #fig.tight_layout()
-    #plt.show()
+
+
 
 
 

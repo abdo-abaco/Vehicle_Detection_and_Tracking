@@ -28,8 +28,6 @@ The goals / steps of this project are the following:
 [video1]: ./project_video.mp4
 
 
-
-
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 
 
@@ -108,4 +106,14 @@ Here's an example result showing the heatmap from a series of frames of video, t
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+
+
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 8460
+16.58 Seconds to train SVC...
+Test Accuracy of SVC =  0.9893
+My SVC predicts:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
+For these 10 labels:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
+0.00083 Seconds to predict 10 labels with SVC
+
 
