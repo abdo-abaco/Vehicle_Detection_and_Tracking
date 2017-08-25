@@ -29,15 +29,11 @@ The goals / steps of this project are the following:
 
 Bringing in the Training Data
 ---
-
 On `search_classify.py` line 19-31, I started by reading in all the `vehicle` and `non-vehicle` images. I print the count of each class respectively to obtain 8792 and 8968. Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
-
 ![alt text][image1]
-
 
 Extracting Histogram of Oriented Gradient Features from the Training Data
 ---
-
 After obtaining the cars and not-car images, we extract their HOG features using the function extract_features() from `lesson_function.py` which calls on get_hog_features(). The features are extracted for each class as shown on `search_classify.py` lines 53 and 66 respectively.
 
 At first the parameters for the HOG features were not obvious to select this required many trails and error. On `search_classify.py` line 37-47 my final selection was to use the YCrCb colorspace, oreint equal 9, 8 pix per cell, and 32 histogram bins. After fine-tuning these parameters I acheive 99% accuracy on my test set.
