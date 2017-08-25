@@ -1,14 +1,7 @@
-# Vehicle Detection
+# Vehicle Detection Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-
-In this project our goal is to create a software pipeline to detect vehicles in a video.
-
-Vehicle Detection Project
----
-
-The goals / steps of this project are the following:
-
+In this project our goal is to create a software pipeline to detect vehicles in a video using the following steps:
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
 * Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
 * Note: for those first two steps we normalize our features and randomize a selection for training and testing.
