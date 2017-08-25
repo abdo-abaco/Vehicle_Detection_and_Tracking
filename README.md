@@ -71,9 +71,6 @@ The Support Vector Classifier and the accompanying parameters get stored `svc_pi
 | 1    |    1				   									|
 | Seconds to predict 10 labels with SVC   |    0.00083 				   									|
 
-
-
-
 Sliding Window Search
 ---
 
@@ -82,9 +79,14 @@ Now that we have a classifier we are ready to use it to find vehicles in an imag
 Initially the boxes are not overlapping and are scanned across the entire image as shown below:
 ![alt text][image5]
 
-To save some processing, I select to scan only the pixels in the vertical range between 400 and 656 as shown in `project.py` line 132 and 133. Due to the cars being near and far from the camera the resulting car images appear to small or big depending on their distance from the camera, therefore multiple scales are used. To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This captures most of the range, however, this does not perform well for extremely close or extremly far vehicles. 
+To save some processing, I select to scan only the pixels in the vertical range between 400 and 656 as shown in `project.py` line 132 and 133. Due to the cars being near and far from the camera the resulting car images appear to be small or big depending on their distance from the camera, therefore multiple scales are used.
 
+To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This captures most of the range, however, this does not perform well for extremely close or extremly far vehicles. 
 
+These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns a bounding box for their location.
+
+![alt text][image7]
+![alt text][image6]
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
@@ -112,10 +114,10 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 
 ### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
+
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
+
 
 
 
