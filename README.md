@@ -27,29 +27,22 @@ The goals / steps of this project are the following:
 [image8]: ./output_images/figure_8.jpg
 [video1]: ./project_video.mp4
 
-
-## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-
-
 Bringing in the Training Data
 ---
 
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+On `search_classify.py` line 19-31, I started by reading in all the `vehicle` and `non-vehicle` images. I print the count of each class respectively to obtain 8792 and 8968. Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
 ![alt text][image1]
 
 
-Extracting HOG Features from the Training Data
+Extracting Histogram of Oriented Gradient Features from the Training Data
 ---
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
+After obtaining the cars and not-car images, we extract their HOG features using the function extract_features() from `lesson_function.py` which calls on get_hog_features(). The features are extracted for each class as shown on `search_classify.py` lines 53 and 66 respectively.
 
+At first the parameters for the HOG features were not obvious to select this required many trails and error. On `search_classify.py` line 37-47 my final selection was to use the YCrCb colorspace, oreint equal 9, 8 pix per cell, and 32 histogram bins. After fine-tuning these parameters I acheive 99% accuracy on my test set.
 
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
-
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
-
-
+Here is an example of my selected HOG parameters.
 ![alt text][image2]
 
 ####2. Explain how you settled on your final choice of HOG parameters.
