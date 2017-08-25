@@ -17,6 +17,7 @@ In this project our goal is to create a software pipeline to detect vehicles in 
 [image5]: ./output_images/figure_5.png
 [image6]: ./output_images/figure_6.png
 [image7]: ./output_images/figure_7.jpg
+[image8]: ./output_images/figure_8.jpg
 [video1]: ./project_video.mp4
 
 Bringing in the Training Data
