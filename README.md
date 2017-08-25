@@ -23,6 +23,7 @@ In this project our goal is to create a software pipeline to detect vehicles in 
 Bringing in the Training Data
 ---
 On `search_classify.py` line 19-31, I started by reading in all the `vehicle` and `non-vehicle` images. I print the count of each class respectively to obtain 8792 and 8968. Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+
 ![alt text][image1]
 
 Extracting Histogram of Oriented Gradient Features from the Training Data
