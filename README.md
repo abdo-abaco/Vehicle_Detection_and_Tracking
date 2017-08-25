@@ -35,9 +35,12 @@ At first the parameters for the HOG features were not obvious to select this req
 Here is an example of my selected HOG parameters.
 ![alt text][image2]
 
-####2. Explain how you settled on your final choice of HOG parameters.
+Normalizing the Extracted HOG Features
+---
+Before feeding the extracted HOG features we normalize them using sklearn.preprocessing's StandardScaler() as seen on `search_classify.py` line 83-88. Here is what the features looked like before and after normalization.
+![alt text][image4]
 
-I tried various combinations of parameters and...
+
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
@@ -49,7 +52,7 @@ I trained a linear SVM using...
 
 I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
 
-![alt text][image4]
+
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
