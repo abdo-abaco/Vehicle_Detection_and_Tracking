@@ -23,8 +23,8 @@ The goals / steps of this project are the following:
 [image4]: ./output_images/figure_4.png
 [image5]: ./output_images/figure_5.png
 [image6]: ./output_images/figure_6.png
-[image7]: ./output_images/figure_7.png
-[image8]: ./output_images/figure_8.png
+[image7]: ./output_images/figure_7.jpg
+[image8]: ./output_images/figure_8.jpg
 [video1]: ./project_video.mp4
 
 
