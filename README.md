@@ -89,8 +89,6 @@ Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spat
 ![alt text][image3]
 ---
 
-Here is what the features looked like before and after normalization.
-![alt text][image4]
 
 
 ### Video Implementation
