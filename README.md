@@ -83,14 +83,10 @@ To save some processing, I select to scan only the pixels in the vertical range 
 
 To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This captures most of the range, however, this does not perform well for extremely close or extremly far vehicles. 
 
-These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns a bounding box for their location.
+These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns a bounding box for their location. A heatmap is generated which increments a pixel location for every pixel in a bounding box. To improve reliability and prevent many false positives we add the heatmap from the previous frame and increase the threshold on lines 148 to 159. Both the heatmap and resulting detections are shown below.
 
 ![alt text][image7]
 ![alt text][image8]
-
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
-
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
 
 
