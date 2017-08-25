@@ -134,7 +134,7 @@ ystop = 656
 scales = [0.9,1.5]
 img = mpimg.imread('test_images/test2.jpg')
 prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
-prev_prev_heat = np.zeros_like(img[:,:,0]).astype(np.float)
+
 number = 1
 
 # Iterate over test images
@@ -149,6 +149,7 @@ for img_path in images:
     # Add heat to each box in box list
     current_heat = add_heat(heat,box_list)
     heat = current_heat + prev_heat
+    prev_heat = current_heat
     mx = np.max(heat)
     mn = np.sum(heat)/np.count_nonzero(heat)
     th = 5
