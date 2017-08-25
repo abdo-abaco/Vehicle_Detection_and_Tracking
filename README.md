@@ -29,7 +29,7 @@ Extracting Histogram of Oriented Gradient Features from the Training Data
 ---
 After obtaining the cars and not-car images, we extract their HOG features using the function extract_features() from `lesson_function.py` which calls on get_hog_features(). The features are extracted for each class as shown on `search_classify.py` lines 53 and 66 respectively.
 
-At first the parameters for the HOG features were not obvious to select this required many trails and error. On `search_classify.py` line 37-47 my final selection was to use the YCrCb colorspace, oreint equal 9, 8 pix per cell, and 32 histogram bins. After fine-tuning these parameters I acheive 99% accuracy on my test set.
+At first the parameters for the HOG features were not obvious to select this required many trails and error. On `search_classify.py` line 37-47 my final selection was to use the YCrCb colorspace, oreint equal 9, 8 pix per cell, and 32 histogram bins. The goal was to fine-tune these parameters so I acheive 99% accuracy on my test set.
 
 Here is an example of my selected HOG parameters.
 ![alt text][image2]
@@ -45,6 +45,8 @@ Training a Support Vector Classifier (SVC) using HOG Features
 ---
 
 On `search_classify.py` lines 91 I define the labels vector and on line 95 I split the data into training and testing data, I chose a 90/10 split because of the limited amount of data and figured 10% training would offer sufficient samples to determine the accuracy. On line 105 I trained the SVC using the HOG features.
+
+The Support Vector Classifier and the accompanying parameters get stored `svc_pickle.p` as shown on `search_classify.py` lines 119-127. This generating file is used in the rest of the project as I discuss `project.py`. I record the results of the experience on the table below:
 
 
 | Test Set         		|     Result	        					| 
@@ -71,7 +73,8 @@ On `search_classify.py` lines 91 I define the labels vector and on line 95 I spl
 
 
 
-###Sliding Window Search
+Sliding Window Search
+---
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
