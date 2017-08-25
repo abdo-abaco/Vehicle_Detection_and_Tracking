@@ -47,8 +47,11 @@ Training a Support Vector Classifier (SVC) using HOG Features
 On `search_classify.py` lines 91 I define the labels vector and on line 95 I split the data into training and testing data, I chose a 90/10 split because of the limited amount of data and figured 10% training would offer sufficient samples to determine the accuracy. On line 105 I trained the SVC using the HOG features.
 
 
-| Layer         		|     Description	        					| 
+| Test Set         		|     Result	        					| 
 |:---------------------:|:---------------------------------------------:| 
+| orientations        		| 9 							| 
+| pixels per cell         		| 8  							| 
+| cells per block         		| 2  							| 
 | Feature vector length         		| 8460  							| 
 | Seconds to train SVC     	| 16.58 |
 | Test Accuracy of SVC					|	0.9893 |
@@ -64,12 +67,6 @@ On `search_classify.py` lines 91 I define the labels vector and on line 95 I spl
 | 1    |    1				   									|
 | 1    |    1				   									|
 | Seconds to predict 10 labels with SVC   |    0.00083 				   									|
-
-
-Using: 9 orientations 8 pixels per cell and 2 cells per block
-
-
-
 
 
 
