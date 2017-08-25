@@ -77,9 +77,12 @@ The Support Vector Classifier and the accompanying parameters get stored `svc_pi
 Sliding Window Search
 ---
 
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
+Now that we have a classifier we are ready to use it to find vehicles in an image. Unfortunately, we cannot just feed the entire image to the classifer we must segment the entire image into overlapping boxes of different scales and slide these 'windows' across the entire image. This requires a great deal of processing.
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+Initially the boxes are not overlapping and are scanned across the entire image as shown below:
+![alt text][image5]
+
+To save some processing, I select to scan only the pixels in the vertical range between 400 and 656 as shown in `project.py` line 132 and 133. Due to the cars being near and far from the camera the resulting car images appear to small or big depending on their distance from the camera, therefore multiple scales are used. To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This captures most of the range, however, this does not perform well for extremely close or extremly far vehicles. 
 
 
 
@@ -88,7 +91,7 @@ I decided to search random window positions at random scales all over the image 
 Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
 
-![alt text][image5]
+
 ---
 
 
