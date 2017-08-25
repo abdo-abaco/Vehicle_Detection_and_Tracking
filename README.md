@@ -12,12 +12,11 @@ In this project our goal is to create a software pipeline to detect vehicles in 
 [//]: # (Image References)
 [image1]: ./output_images/figure_1.png
 [image2]: ./output_images/figure_2.png
-[image3]: ./output_images/figure_3.png
+[image3]: ./output_images/figure_8.png
 [image4]: ./output_images/figure_4.png
 [image5]: ./output_images/figure_5.png
 [image6]: ./output_images/figure_6.png
 [image7]: ./output_images/figure_7.jpg
-[image8]: ./output_images/figure_8.jpg
 [video1]: ./project_video.mp4
 
 Bringing in the Training Data
@@ -37,14 +36,28 @@ Here is an example of my selected HOG parameters.
 
 Normalizing the Extracted HOG Features
 ---
-Before feeding the extracted HOG features we normalize them using sklearn.preprocessing's StandardScaler() as seen on `search_classify.py` line 83-88. Here is what the features looked like before and after normalization.
+
+Before feeding the extracted HOG features we normalize them using sklearn.preprocessing's StandardScaler() as seen on `search_classify.py` lines 83-88. Here is what the features looked like before and after normalization.
 ![alt text][image4]
 
 
+Training a Support Vector Classifier (SVC) using HOG Features
+---
 
-####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+On `search_classify.py` lines 91 I define the labels vector and on line 95 I split the data into training and testing data, I chose a 90/10 split because of the limited amount of data and figured 10% training would offer sufficient samples to determine the accuracy. On line 105 I trained the SVC using the HOG features.
 
-I trained a linear SVM using...
+
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 8460
+16.58 Seconds to train SVC...
+Test Accuracy of SVC =  0.9893
+My SVC predicts:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
+For these 10 labels:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
+0.00083 Seconds to predict 10 labels with SVC
+
+
+
+
 
 ###Sliding Window Search
 
@@ -60,6 +73,10 @@ Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spat
 
 ![alt text][image3]
 ---
+
+Here is what the features looked like before and after normalization.
+![alt text][image4]
+
 
 ### Video Implementation
 
@@ -94,12 +111,6 @@ Here's an example result showing the heatmap from a series of frames of video, t
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
 
 
-Using: 9 orientations 8 pixels per cell and 2 cells per block
-Feature vector length: 8460
-16.58 Seconds to train SVC...
-Test Accuracy of SVC =  0.9893
-My SVC predicts:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
-For these 10 labels:  [ 0.  0.  1.  1.  0.  0.  0.  0.  1.  1.]
-0.00083 Seconds to predict 10 labels with SVC
+
 
 
