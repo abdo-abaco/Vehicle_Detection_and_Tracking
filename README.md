@@ -86,7 +86,7 @@ To save processing I limit my scales to 0.9 and 1.5 as shown on line 134. This c
 These new search parameters get passed along with the classifier parameters to find_cars() on line 146 which detects vehicles and returns a bounding box for their location.
 
 ![alt text][image7]
-![alt text][image6]
+![alt text][image8]
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
